@@ -556,3 +556,257 @@ class Plyaer extends User {
 `public` : 속해있지 않아도 밖에서 접근 가능
 
 `protected` : 외부에서는 보호 되지만 자식 클래스에서는 사용될 수 있음! 자식 클래스더라도 클래스 밖에서는 사용 불가!!
+
+---
+
+**[key:stirng] : string**
+
+→ 제한된 양의 property 혹은 key를 가지는 타입을 정의해주는 방법.
+
+→ object의 Type을 선언 해야할때 쓴다.
+
+→ 이 object는 제한된 양의 property만을 가질 수 있고 property에 대해서 미리 알진 못하지만 타입만 알고 있을 때 쓰면 된다!
+
+---
+
+**Public이지만 수정을 원하지 않을때**
+
+- public readonly term: string
+- 이런식으로 readonly를 붙여주면 된다!
+- readonly를 쓰면 수정하는 것으로부터 데이터를 보호해준다!
+
+---
+
+**Static(**정적 메서드)
+
+- 클래스의 종속적인 메서드
+- 클래스 - 메서드는 연결되어있지만 클래스의 인스턴스와는 연결 X
+- 정적메서드는 특정 객체(클래스)에 저장된 데이터에 접근할 수 없음.
+- 정적메서드는 클래스의 인스턴스 없이 호출이 가능 → **유틸리티 함수**를 만드는 사용
+- 정적메서드는 **클래스의 데이터를 못가져옴**(this X)
+- **객체의 인스턴스를 생성해도 정적 메서드는 클래스의 데이터를 가져오지 못한다.**
+
+---
+
+Type 사용하기(정리)
+
+```tsx
+type Nickname = string;
+type Health = number;
+type Friends = Array<string>;
+
+type Player = { // Type 선언이지만 Object의 모양을 설명한다.
+  nickname: Nickname; //alias 사용
+  healthBar: Health;
+};
+
+const nico: Player = {
+  nickname: "nico",
+  healthBar: 10,
+};
+```
+
+```tsx
+//특정 string을 지정하여 Type 선언
+type Team = "red" | "blue" | "black";
+
+type Player = {
+  nickname: string;
+  team: Team;
+};
+```
+
+---
+
+1. **Interface**
+- **오브젝트의 모양을 알려주는 방법** 중 하나(나머지 하나는 위에서 설명함!)
+
+```tsx
+type Team = "red" | "blue" | "black";
+
+interface Player {
+  nickname: string;
+  team: Team;
+}
+```
+
+- **type 키워드가 interface 키워드에 비해 좀 더 활용할 수 있는게 많다.**
+- interface는 `interface Hello = string;` 이런거 불가능!
+- 오직 Object의 모양을 설명하는데에만 쓰인다.
+
+- 하지만 class에 익숙해서 그냥 interface를 많이 쓴다.
+
+**< interface >**
+
+```tsx
+interface User {
+  name: string;
+}
+
+interface Player extends User {}
+
+const nico: Player = {
+  name: "nico",
+};
+```
+
+**< type >**
+
+```tsx
+type User {
+  name: string;
+}
+
+type Player = User & {} // |(or) 쓴거랑 비슷한느낌.
+
+const nico: Player = {
+  name: "nico",
+};
+```
+
+  
+
+**abstract 클래스를 왜 쓸까?**
+
+- 클래스에게 어떻게 구현해야할지는 알려주진 않지만
+- **무엇을 구현해야 할지에 대해서는 알려준다!**
+- 청사진역할,
+- **다른 클래스들이 표준화된 모양, 표준화된 property와 메소드를 갖도록 해주는 청사진을 만들기위해 추상클래스를 사용한다.**
+
+```tsx
+abstract class User {
+  constructor(
+	protected firstName: string, 
+	protected lastName: string) {}
+
+  abstract sayHi(name: string): string;
+  abstract fullName(): string;
+}
+
+class Player extends User {
+  fullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+  sayHi(name: string): string {
+    return `Hello ${name}. My name is ${this.fullName()}`;
+  }
+}
+```
+
+**그러면 인터페이스를 쓸 때 클래스가 특정 형태를 따르도록 어떻게 강제할까?**
+
+- 인터페이스를 상속할 때에는 property를 private으로 만들지 못한다!
+- 무조건! **public으로 선언**해야한다!
+- 인터페이스는 JS로 컴파일되지 않는다.
+- 인터페이스와 비슷한 abstract는 컴파일 된다!
+    - abstract 클래스를 쓰면 JS에서는 일반적인 클래스로 컴파일된다.
+    - 그래서 컴파일되지 않는 interface를 쓰는게 abstract로 클래스의 모양을 강제시킬땐 더 좋다!
+
+**인터페이스를 타입으로도 쓸 수있다!**
+
+```tsx
+function makeUser(user: User) {
+  return "hi";
+}
+
+makeUser({
+  firstName: "Jang",
+  lastName: "Hoon",
+  fullName: () => `${this.firstName} ${this.lastName}`,
+  sayHi: (name) => "string",
+});
+```
+
+**인터페이스와 타입의 차이점**
+
+- 인터페이스는 **고유한** 사용처가 있다.
+    - 내가 원하는 메소드와 property를 클래스가 가지도록 강제하는것이다.
+- 클래스의 모양을 알려준다는 점에서 유용하다!
+- 나중에 property를 추가하고 싶을때
+    - Type : 똑같은 이름으로 추가 불가!
+    - Interface : 똑같은 이름으로 쓰고 추가할 property를 적으면 됨!
+
+```tsx
+type PlayerA = {
+  name: string;
+};
+type PlayerAA = PlayerA & {
+  lastName: string;
+};
+const PlayerA: PlayerAA = {
+  name: "hoon",
+  lastName: "seok",
+};
+///////
+interface PlayerB {
+  name: string;
+}
+interface PlayerBB extends PlayerB {
+  lastName: string;
+}
+interface PlayerBB { // 똑같은 이름으로 가능!
+  health: number;
+}
+const PlayerB: PlayerBB = {
+  name: "hoon",
+  lastName: "seok",
+  health: 1,
+};
+
+class UserA implements PlayerA { // type사용
+  constructor(public name: string) {}
+}
+
+class UserB implements PlayerB { // interface사용.
+  constructor(public name: string) {}
+}
+```
+
+- 클래스나 오브젝트의 모양을 정의하고 싶으면 Interface를 사용!
+    - 왜냐면 인터페이스를 상속시키는 방법이 직관적이기 때문!
+- 다른 모든 경우에서는 타입을 써라!
+    - 타입 Alias, 특정값으로 타입을 제한.. 등등!!
+
+![스크린샷 2022-08-20 18.24.34.png](Typescript%E1%84%85%E1%85%A9%20%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%86%A8%E1%84%8E%E1%85%A6%E1%84%8B%E1%85%B5%E1%86%AB%20%E1%84%86%E1%85%A1%E1%86%AB%E1%84%83%E1%85%B3%E1%86%AF%E1%84%80%E1%85%B5%2025030abcb3a9422e9355a84f99b5dc19/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-08-20_18.24.34.png)
+
+---
+
+1. **Polymorphism(다형성)**
+
+: 다른 모양의 코드를 가질 수 있게 해주는 것.
+
+: Polymorphism → Genric을 사용하여 구현 가능!
+
+**Genric : Placeholder 타입을 쓸 수 있도록 해준다!(Not Concrete타입.)**
+
+```tsx
+interface SStorage<T> {
+  [key: string]: T;
+}
+class LocalStorage<T> {
+  // 클래스를 초기화 할때 T라는 제네릭을 받을 계획이라고 알려주는거임.
+  // 제네릭을 클래스로 보내고, 클래스는 제네릭을 인터페이스로 보낸 뒤에
+  // 인터페이스는 제네릭을 사용한다.
+  private storage: SStorage<T> = {};
+  set(key: string, value: T) {
+    this.storage[key] = value;
+  }
+  remove(key: string) {
+    delete this.storage[key];
+  }
+  get(key: string): T {
+    return this.storage[key];
+  }
+  clear() {
+    this.storage = {};
+  }
+}
+
+const stringStorage = new LocalStorage<string>();
+stringStorage.get("xxx");
+stringStorage.set("hello", "xx");
+
+const booleanStorage = new LocalStorage<boolean>();
+booleanStorage.get("xxxx");
+booleanStorage.set("hello", true);
+```
