@@ -21,3 +21,13 @@ class Player2 implements User, Human {
     return `Hello ${name} My name is ${this.fullName()}`;
   }
 }
+
+function makeUser(user: User) {
+  return "hi";
+}
+makeUser({
+  firstName: "Jang",
+  lastName: "Hoon",
+  fullName: () => `${this.firstName} ${this.lastName}`,
+  sayHi: (name) => "string",
+});
